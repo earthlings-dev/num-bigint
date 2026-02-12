@@ -1,14 +1,11 @@
 [package]
 name = "big_serde"
 version = "0.1.0"
-authors = ["Josh Stone <cuviper@gmail.com>"]
-edition = "2018"
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
-num-traits = "0.2.11"
-serde = "1.0"
-serde_test = "1.0"
-
-[dependencies.num-bigint]
-features = ["serde"]
-path = "../.."
+num-bigint = { workspace = true, features = ["serde"] }
+num-traits = { workspace = true }
+serde = { workspace = true }
+serde_test = { workspace = true }

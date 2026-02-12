@@ -45,7 +45,7 @@
 //! ```rust,ignore
 //! use num_bigint::{ToBigInt, RandBigInt};
 //!
-//! let mut rng = rand::thread_rng();
+//! let mut rng = rand::rng();
 //! let a = rng.gen_bigint(1000);
 //!
 //! let low = -10000.to_bigint().unwrap();
@@ -71,12 +71,12 @@
 //! feature is enabled. To enable it include rand as
 //!
 //! ```toml
-//! rand = "0.8"
+//! rand = "0.10"
 //! num-bigint = { version = "0.4", features = ["rand"] }
 //! ```
 //!
 //! Note that you must use the version of `rand` that `num-bigint` is compatible
-//! with: `0.8`.
+//! with: `0.10`.
 //!
 //! ### Arbitrary Big Integers
 //!
@@ -93,11 +93,10 @@
 //!
 //! ## Compatibility
 //!
-//! The `num-bigint` crate is tested for rustc 1.60 and greater.
+//! The `num-bigint` crate is tested for rustc 1.93 and greater.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc(html_root_url = "https://docs.rs/num-bigint/0.4")]
-#![warn(rust_2018_idioms)]
 #![no_std]
 
 #[macro_use]

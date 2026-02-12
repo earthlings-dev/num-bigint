@@ -346,11 +346,7 @@ impl Integer for BigInt {
         let (d_ui, r_ui) = self.data.div_rem(&other.data);
         let d = BigInt::from_biguint(self.sign, d_ui);
         let r = BigInt::from_biguint(self.sign, r_ui);
-        if other.is_negative() {
-            (-d, r)
-        } else {
-            (d, r)
-        }
+        if other.is_negative() { (-d, r) } else { (d, r) }
     }
 
     #[inline]

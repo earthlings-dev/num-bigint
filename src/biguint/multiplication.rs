@@ -1,9 +1,9 @@
 use super::addition::{__add2, add2};
 use super::subtraction::sub2;
-use super::{biguint_from_vec, cmp_slice, BigUint, IntDigits};
+use super::{BigUint, IntDigits, biguint_from_vec, cmp_slice};
 
-use crate::big_digit::{self, BigDigit, DoubleBigDigit};
 use crate::Sign::{self, Minus, NoSign, Plus};
+use crate::big_digit::{self, BigDigit, DoubleBigDigit};
 use crate::{BigInt, UsizePromotion};
 
 use core::cmp::Ordering;

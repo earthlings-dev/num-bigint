@@ -12,8 +12,8 @@
 
 use num_bigint::{BigInt, BigUint};
 use num_traits::{One, Zero};
-use serde::{de::DeserializeOwned, Serialize};
-use serde_test::{assert_de_tokens, assert_ser_tokens, assert_tokens, Token};
+use serde::{Serialize, de::DeserializeOwned};
+use serde_test::{Token, assert_de_tokens, assert_ser_tokens, assert_tokens};
 use std::{fmt::Debug, panic::catch_unwind};
 
 #[test]

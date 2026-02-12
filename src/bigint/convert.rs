@@ -362,11 +362,7 @@ impl_to_bigint!(f64, FromPrimitive::from_f64);
 
 impl From<bool> for BigInt {
     fn from(x: bool) -> Self {
-        if x {
-            One::one()
-        } else {
-            Self::ZERO
-        }
+        if x { One::one() } else { Self::ZERO }
     }
 }
 

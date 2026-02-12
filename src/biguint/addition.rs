@@ -1,7 +1,7 @@
 use super::{BigUint, IntDigits};
 
-use crate::big_digit::{self, BigDigit};
 use crate::UsizePromotion;
+use crate::big_digit::{self, BigDigit};
 
 use core::iter::Sum;
 use core::ops::{Add, AddAssign};
@@ -18,9 +18,7 @@ use core::arch::x86 as arch;
 cfg_64!(
     #[inline]
     fn adc(carry: u8, a: u64, b: u64, out: &mut u64) -> u8 {
-        // Safety: There are absolutely no safety concerns with calling `_addcarry_u64`.
-        // It's just unsafe for API consistency with other intrinsics.
-        unsafe { arch::_addcarry_u64(carry, a, b, out) }
+        arch::_addcarry_u64(carry, a, b, out)
     }
 );
 

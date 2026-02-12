@@ -1,5 +1,5 @@
-use super::monty::monty_modpow;
 use super::BigUint;
+use super::monty::monty_modpow;
 
 use crate::big_digit::{self, BigDigit};
 

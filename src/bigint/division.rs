@@ -474,11 +474,7 @@ impl Euclid for BigInt {
     fn div_euclid(&self, v: &BigInt) -> BigInt {
         let (q, r) = self.div_rem(v);
         if r.is_negative() {
-            if v.is_positive() {
-                q - 1
-            } else {
-                q + 1
-            }
+            if v.is_positive() { q - 1 } else { q + 1 }
         } else {
             q
         }
@@ -488,11 +484,7 @@ impl Euclid for BigInt {
     fn rem_euclid(&self, v: &BigInt) -> BigInt {
         let r = self % v;
         if r.is_negative() {
-            if v.is_positive() {
-                r + v
-            } else {
-                r - v
-            }
+            if v.is_positive() { r + v } else { r - v }
         } else {
             r
         }

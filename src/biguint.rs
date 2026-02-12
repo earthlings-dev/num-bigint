@@ -207,11 +207,7 @@ impl Integer for BigUint {
     #[inline]
     fn div_ceil(&self, other: &BigUint) -> BigUint {
         let (d, m) = division::div_rem_ref(self, other);
-        if m.is_zero() {
-            d
-        } else {
-            d + 1u32
-        }
+        if m.is_zero() { d } else { d + 1u32 }
     }
 
     /// Calculates the Greatest Common Divisor (GCD) of the number and `other`.
@@ -455,7 +451,7 @@ impl Roots for BigUint {
                 // Try to guess by scaling down such that it does fit in `f64`.
                 // With some (x * 2²ᵏ), its sqrt ≈ (√x * 2ᵏ)
                 let extra_bits = bits - (f64::MAX_EXP as u64 - 1);
-                let root_scale = (extra_bits + 1) / 2;
+                let root_scale = extra_bits.div_ceil(2);
                 let scale = root_scale * 2;
                 (self >> scale).sqrt() << root_scale
             }
@@ -496,7 +492,7 @@ impl Roots for BigUint {
                 // Try to guess by scaling down such that it does fit in `f64`.
                 // With some (x * 2³ᵏ), its cbrt ≈ (∛x * 2ᵏ)
                 let extra_bits = bits - (f64::MAX_EXP as u64 - 1);
-                let root_scale = (extra_bits + 2) / 3;
+                let root_scale = extra_bits.div_ceil(3);
                 let scale = root_scale * 3;
                 (self >> scale).cbrt() << root_scale
             }
@@ -960,11 +956,7 @@ impl BigUint {
             t1 = t2;
         }
 
-        if r0.is_one() {
-            Some(t0)
-        } else {
-            None
-        }
+        if r0.is_one() { Some(t0) } else { None }
     }
 
     /// Returns the truncated principal square root of `self` --
@@ -1011,11 +1003,11 @@ impl BigUint {
     /// Returns whether the bit in the given position is set
     pub fn bit(&self, bit: u64) -> bool {
         let bits_per_digit = u64::from(big_digit::BITS);
-        if let Some(digit_index) = (bit / bits_per_digit).to_usize() {
-            if let Some(digit) = self.data.get(digit_index) {
-                let bit_mask = (1 as BigDigit) << (bit % bits_per_digit);
-                return (digit & bit_mask) != 0;
-            }
+        if let Some(digit_index) = (bit / bits_per_digit).to_usize()
+            && let Some(digit) = self.data.get(digit_index)
+        {
+            let bit_mask = (1 as BigDigit) << (bit % bits_per_digit);
+            return (digit & bit_mask) != 0;
         }
         false
     }

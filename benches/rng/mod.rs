@@ -1,6 +1,7 @@
-use rand::RngCore;
+use core::convert::Infallible;
+use rand::TryRng;
 
-pub(crate) fn get_rng() -> impl RngCore {
+pub(crate) fn get_rng() -> impl rand::Rng {
     XorShiftStar {
         a: 0x0123_4567_89AB_CDEF,
     }
@@ -11,28 +12,27 @@ struct XorShiftStar {
     a: u64,
 }
 
-impl RngCore for XorShiftStar {
-    fn next_u32(&mut self) -> u32 {
-        self.next_u64() as u32
+impl TryRng for XorShiftStar {
+    type Error = Infallible;
+
+    fn try_next_u32(&mut self) -> Result<u32, Infallible> {
+        Ok(self.try_next_u64()? as u32)
     }
 
-    fn next_u64(&mut self) -> u64 {
+    fn try_next_u64(&mut self) -> Result<u64, Infallible> {
         // https://en.wikipedia.org/wiki/Xorshift#xorshift*
         self.a ^= self.a >> 12;
         self.a ^= self.a << 25;
         self.a ^= self.a >> 27;
-        self.a.wrapping_mul(0x2545_F491_4F6C_DD1D)
+        Ok(self.a.wrapping_mul(0x2545_F491_4F6C_DD1D))
     }
 
-    fn fill_bytes(&mut self, dest: &mut [u8]) {
+    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Infallible> {
         for chunk in dest.chunks_mut(8) {
-            let bytes = self.next_u64().to_le_bytes();
+            let bytes = self.try_next_u64()?.to_le_bytes();
             let slice = &bytes[..chunk.len()];
-            chunk.copy_from_slice(slice)
+            chunk.copy_from_slice(slice);
         }
-    }
-
-    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
-        Ok(self.fill_bytes(dest))
+        Ok(())
     }
 }

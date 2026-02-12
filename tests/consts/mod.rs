@@ -1,9 +1,24 @@
 #![allow(unused)]
 
+pub type U32Triple = (&'static [u32], &'static [u32], &'static [u32]);
+pub type U32Quadruple = (
+    &'static [u32],
+    &'static [u32],
+    &'static [u32],
+    &'static [u32],
+);
+pub type U32Quintuple = (
+    &'static [u32],
+    &'static [u32],
+    &'static [u32],
+    &'static [u32],
+    &'static [u32],
+);
+
 pub const N1: u32 = -1i32 as u32;
 pub const N2: u32 = -2i32 as u32;
 
-pub const SUM_TRIPLES: &[(&[u32], &[u32], &[u32])] = &[
+pub const SUM_TRIPLES: &[U32Triple] = &[
     (&[], &[], &[]),
     (&[], &[1], &[1]),
     (&[1], &[1], &[2]),
@@ -17,7 +32,7 @@ pub const SUM_TRIPLES: &[(&[u32], &[u32], &[u32])] = &[
 ];
 
 pub const M: u32 = u32::MAX;
-pub const MUL_TRIPLES: &[(&[u32], &[u32], &[u32])] = &[
+pub const MUL_TRIPLES: &[U32Triple] = &[
     (&[], &[], &[]),
     (&[], &[1], &[]),
     (&[2], &[], &[]),
@@ -41,7 +56,7 @@ pub const MUL_TRIPLES: &[(&[u32], &[u32], &[u32])] = &[
     (&[0, 0, 1], &[0, 0, 0, 1], &[0, 0, 0, 0, 0, 1]),
 ];
 
-pub const DIV_REM_QUADRUPLES: &[(&[u32], &[u32], &[u32], &[u32])] = &[
+pub const DIV_REM_QUADRUPLES: &[U32Quadruple] = &[
     (&[1], &[2], &[], &[1]),
     (&[3], &[2], &[1], &[1]),
     (&[1, 1], &[2], &[M / 2 + 1], &[1]),

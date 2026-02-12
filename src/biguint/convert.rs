@@ -1,15 +1,15 @@
 // This uses stdlib features higher than the MSRV
 #![allow(clippy::manual_range_contains)] // 1.35
 
-use super::{biguint_from_vec, BigUint, ToBigUint};
+use super::{BigUint, ToBigUint, biguint_from_vec};
 
 use super::addition::add2;
-use super::division::{div_rem_digit, FAST_DIV_WIDE};
+use super::division::{FAST_DIV_WIDE, div_rem_digit};
 use super::multiplication::mac_with_carry;
 
-use crate::big_digit::{self, BigDigit};
 use crate::ParseBigIntError;
 use crate::TryFromBigIntError;
+use crate::big_digit::{self, BigDigit};
 
 use alloc::vec::Vec;
 use core::cmp::Ordering::{Equal, Greater, Less};
@@ -42,7 +42,7 @@ impl FromStr for BigUint {
 // Convert from a power of two radix (bits == ilog2(radix)) where bits evenly divides
 // BigDigit::BITS
 pub(super) fn from_bitwise_digits_le(v: &[u8], bits: u8) -> BigUint {
-    debug_assert!(!v.is_empty() && bits <= 8 && big_digit::BITS % bits == 0);
+    debug_assert!(!v.is_empty() && bits <= 8 && big_digit::BITS.is_multiple_of(bits));
     debug_assert!(v.iter().all(|&c| BigDigit::from(c) < (1 << bits)));
 
     let digits_per_big_digit = big_digit::BITS / bits;
@@ -63,7 +63,7 @@ pub(super) fn from_bitwise_digits_le(v: &[u8], bits: u8) -> BigUint {
 // Convert from a power of two radix (bits == ilog2(radix)) where bits doesn't evenly divide
 // BigDigit::BITS
 fn from_inexact_bitwise_digits_le(v: &[u8], bits: u8) -> BigUint {
-    debug_assert!(!v.is_empty() && bits <= 8 && big_digit::BITS % bits != 0);
+    debug_assert!(!v.is_empty() && bits <= 8 && !big_digit::BITS.is_multiple_of(bits));
     debug_assert!(v.iter().all(|&c| BigDigit::from(c) < (1 << bits)));
 
     let total_bits = (v.len() as u64).saturating_mul(bits.into());
@@ -171,7 +171,7 @@ pub(super) fn from_radix_be(buf: &[u8], radix: u32) -> Option<BigUint> {
         let bits = ilog2(radix);
         let mut v = Vec::from(buf);
         v.reverse();
-        if big_digit::BITS % bits == 0 {
+        if big_digit::BITS.is_multiple_of(bits) {
             from_bitwise_digits_le(&v, bits)
         } else {
             from_inexact_bitwise_digits_le(&v, bits)
@@ -200,7 +200,7 @@ pub(super) fn from_radix_le(buf: &[u8], radix: u32) -> Option<BigUint> {
     let res = if radix.is_power_of_two() {
         // Powers of two can use bitwise masks and shifting instead of multiplication
         let bits = ilog2(radix);
-        if big_digit::BITS % bits == 0 {
+        if big_digit::BITS.is_multiple_of(bits) {
             from_bitwise_digits_le(buf, bits)
         } else {
             from_inexact_bitwise_digits_le(buf, bits)
@@ -221,10 +221,10 @@ impl Num for BigUint {
     fn from_str_radix(s: &str, radix: u32) -> Result<BigUint, ParseBigIntError> {
         assert!(2 <= radix && radix <= 36, "The radix must be within 2...36");
         let mut s = s;
-        if let Some(tail) = s.strip_prefix('+') {
-            if !tail.starts_with('+') {
-                s = tail
-            }
+        if let Some(tail) = s.strip_prefix('+')
+            && !tail.starts_with('+')
+        {
+            s = tail
         }
 
         if s.is_empty() {
@@ -257,7 +257,7 @@ impl Num for BigUint {
             // Powers of two can use bitwise masks and shifting instead of multiplication
             let bits = ilog2(radix);
             v.reverse();
-            if big_digit::BITS % bits == 0 {
+            if big_digit::BITS.is_multiple_of(bits) {
                 from_bitwise_digits_le(&v, bits)
             } else {
                 from_inexact_bitwise_digits_le(&v, bits)
@@ -589,17 +589,13 @@ impl_to_biguint!(f64, FromPrimitive::from_f64);
 
 impl From<bool> for BigUint {
     fn from(x: bool) -> Self {
-        if x {
-            One::one()
-        } else {
-            Self::ZERO
-        }
+        if x { One::one() } else { Self::ZERO }
     }
 }
 
 // Extract bitwise digits that evenly divide BigDigit
 pub(super) fn to_bitwise_digits_le(u: &BigUint, bits: u8) -> Vec<u8> {
-    debug_assert!(!u.is_zero() && bits <= 8 && big_digit::BITS % bits == 0);
+    debug_assert!(!u.is_zero() && bits <= 8 && big_digit::BITS.is_multiple_of(bits));
 
     let last_i = u.data.len() - 1;
     let mask: BigDigit = (1 << bits) - 1;
@@ -627,7 +623,7 @@ pub(super) fn to_bitwise_digits_le(u: &BigUint, bits: u8) -> Vec<u8> {
 
 // Extract bitwise digits that don't evenly divide BigDigit
 fn to_inexact_bitwise_digits_le(u: &BigUint, bits: u8) -> Vec<u8> {
-    debug_assert!(!u.is_zero() && bits <= 8 && big_digit::BITS % bits != 0);
+    debug_assert!(!u.is_zero() && bits <= 8 && !big_digit::BITS.is_multiple_of(bits));
 
     let mask: BigDigit = (1 << bits) - 1;
     let digits = Integer::div_ceil(&u.bits(), &u64::from(bits))
@@ -753,7 +749,7 @@ pub(super) fn to_radix_le(u: &BigUint, radix: u32) -> Vec<u8> {
     } else if radix.is_power_of_two() {
         // Powers of two can use bitwise masks and shifting instead of division
         let bits = ilog2(radix);
-        if big_digit::BITS % bits == 0 {
+        if big_digit::BITS.is_multiple_of(bits) {
             to_bitwise_digits_le(u, bits)
         } else {
             to_inexact_bitwise_digits_le(u, bits)

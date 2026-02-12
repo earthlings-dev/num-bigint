@@ -1,7 +1,7 @@
 #![cfg(feature = "serde")]
 #![cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 
-use super::{biguint_from_vec, BigUint};
+use super::{BigUint, biguint_from_vec};
 
 use alloc::vec::Vec;
 use core::{cmp, fmt, mem};

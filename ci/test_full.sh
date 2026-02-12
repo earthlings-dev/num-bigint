@@ -3,7 +3,7 @@
 set -e
 
 CRATE=num-bigint
-MSRV=1.60
+MSRV=1.93
 
 get_rust_version() {
   local array=($(rustc --version));
@@ -33,11 +33,6 @@ echo "Testing supported features: ${STD_FEATURES[*]}"
 if [ -n "${NO_STD_FEATURES[*]}" ]; then
   echo " no_std supported features: ${NO_STD_FEATURES[*]}"
 fi
-
-# arbitrary 1.1.4 started using array::from_fn
-check_version 1.63.0 || cargo update -p arbitrary --precise 1.1.3
-
-check_version 1.63.0 || cargo update -p libc --precise 0.2.163
 
 set -x
 
@@ -85,14 +80,10 @@ case "${STD_FEATURES[*]}" in
     ) ;;&
   *rand*) (
       cd ci/big_rand
-      check_version 1.63.0 || cargo update -p libc --precise 0.2.163
-      check_version 1.61.0 || cargo update -p ppv-lite86 --precise 0.2.17
       cargo test
     ) ;;&
   *quickcheck*) (
       cd ci/big_quickcheck
-      check_version 1.63.0 || cargo update -p libc --precise 0.2.163
-      check_version 1.61.0 || cargo update -p syn --precise 2.0.67
       cargo test
     ) ;;&
 esac

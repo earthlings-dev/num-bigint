@@ -24,26 +24,18 @@ fn quickcheck_signed_eq_reflexive(a: BigInt) -> bool {
 
 #[quickcheck]
 fn quickcheck_unsigned_eq_symmetric(a: BigUint, b: BigUint) -> bool {
-    if a == b {
-        b == a
-    } else {
-        b != a
-    }
+    if a == b { b == a } else { b != a }
 }
 
 #[quickcheck]
 fn quickcheck_signed_eq_symmetric(a: BigInt, b: BigInt) -> bool {
-    if a == b {
-        b == a
-    } else {
-        b != a
-    }
+    if a == b { b == a } else { b != a }
 }
 
 #[test]
 fn quickcheck_arith_primitive() {
-    let gen = Gen::new(usize::MAX);
-    let mut qc = QuickCheck::new().gen(gen);
+    let g = Gen::new(usize::MAX);
+    let mut qc = QuickCheck::new().rng(g);
 
     fn test_unsigned_add_primitive(a: usize, b: usize) -> TestResult {
         let actual = BigUint::from(a) + BigUint::from(b);
@@ -196,7 +188,7 @@ fn quickcheck_signed_distributive(a: BigInt, b: BigInt, c: BigInt) -> bool {
 #[quickcheck]
 ///Tests that exactly one of a<b a>b a=b is true
 fn quickcheck_unsigned_ge_le_eq_mut_exclusive(a: BigUint, b: BigUint) -> bool {
-    let gt_lt_eq = vec![a > b, a < b, a == b];
+    let gt_lt_eq = [a > b, a < b, a == b];
     gt_lt_eq
         .iter()
         .fold(0, |acc, e| if *e { acc + 1 } else { acc })
@@ -206,7 +198,7 @@ fn quickcheck_unsigned_ge_le_eq_mut_exclusive(a: BigUint, b: BigUint) -> bool {
 #[quickcheck]
 ///Tests that exactly one of a<b a>b a=b is true
 fn quickcheck_signed_ge_le_eq_mut_exclusive(a: BigInt, b: BigInt) -> bool {
-    let gt_lt_eq = vec![a > b, a < b, a == b];
+    let gt_lt_eq = [a > b, a < b, a == b];
     gt_lt_eq
         .iter()
         .fold(0, |acc, e| if *e { acc + 1 } else { acc })
@@ -261,7 +253,7 @@ fn quickcheck_signed_cbrt(a: BigInt) -> bool {
 #[quickcheck]
 fn quickcheck_unsigned_conversion(a: BigUint, radix: u8) -> TestResult {
     let radix = radix as u32;
-    if radix > 36 || radix < 2 {
+    if !(2..=36).contains(&radix) {
         return TestResult::discard();
     }
     let string = a.to_str_radix(radix);
@@ -271,7 +263,7 @@ fn quickcheck_unsigned_conversion(a: BigUint, radix: u8) -> TestResult {
 #[quickcheck]
 fn quickcheck_signed_conversion(a: BigInt, radix: u8) -> TestResult {
     let radix = radix as u32;
-    if radix > 36 || radix < 2 {
+    if !(2..=36).contains(&radix) {
         return TestResult::discard();
     }
     let string = a.to_str_radix(radix);
@@ -280,8 +272,8 @@ fn quickcheck_signed_conversion(a: BigInt, radix: u8) -> TestResult {
 
 #[test]
 fn quicktest_shift() {
-    let gen = Gen::new(usize::MAX);
-    let mut qc = QuickCheck::new().gen(gen);
+    let g = Gen::new(usize::MAX);
+    let mut qc = QuickCheck::new().rng(g);
 
     fn test_shr_unsigned(a: u64, shift: u8) -> TestResult {
         let shift = (shift % 64) as usize; //shift at most 64 bits
@@ -317,8 +309,8 @@ fn quicktest_shift() {
 
 #[test]
 fn quickcheck_modpow() {
-    let gen = Gen::new(usize::MAX);
-    let mut qc = QuickCheck::new().gen(gen);
+    let g = Gen::new(usize::MAX);
+    let mut qc = QuickCheck::new().rng(g);
 
     fn simple_modpow(base: &BigInt, exponent: &BigInt, modulus: &BigInt) -> BigInt {
         assert!(!exponent.is_negative());
@@ -360,8 +352,8 @@ fn quickcheck_modpow() {
 
 #[test]
 fn quickcheck_modinv() {
-    let gen = Gen::new(usize::MAX);
-    let mut qc = QuickCheck::new().gen(gen);
+    let g = Gen::new(usize::MAX);
+    let mut qc = QuickCheck::new().rng(g);
 
     fn test_modinv(value: i128, modulus: i128) -> TestResult {
         if modulus.is_zero() {
@@ -417,8 +409,8 @@ fn quickcheck_modinv() {
 
 #[test]
 fn quickcheck_to_float_equals_i128_cast() {
-    let gen = Gen::new(usize::MAX);
-    let mut qc = QuickCheck::new().gen(gen).tests(1_000_000);
+    let g = Gen::new(usize::MAX);
+    let mut qc = QuickCheck::new().rng(g).tests(1_000_000);
 
     fn to_f32_equals_i128_cast(value: i128) -> bool {
         BigInt::from(value).to_f32() == Some(value as f32)

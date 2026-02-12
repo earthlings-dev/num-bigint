@@ -1,8 +1,8 @@
 use super::addition::__add2;
-use super::{cmp_slice, BigUint};
+use super::{BigUint, cmp_slice};
 
-use crate::big_digit::{self, BigDigit, DoubleBigDigit};
 use crate::UsizePromotion;
+use crate::big_digit::{self, BigDigit, DoubleBigDigit};
 
 use core::cmp::Ordering::{Equal, Greater, Less};
 use core::mem;

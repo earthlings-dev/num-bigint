@@ -1,6 +1,6 @@
 #![cfg(any(feature = "quickcheck", feature = "arbitrary"))]
 
-use super::{biguint_from_vec, BigUint};
+use super::{BigUint, biguint_from_vec};
 
 use crate::big_digit::BigDigit;
 #[cfg(feature = "quickcheck")]
